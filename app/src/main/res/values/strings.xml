@@ -1,6 +1,3 @@
 <resources>
-    <string name="app_name">MiPrimeraAplicacion</string>
-    <string name="show_less">Show less</string>
-    <string name="show_more">Show more</string>
-    <string name="welcome_to_de_basic_compose_lab">Bienvenido!</string>
+    <string name="app_name">AppDeVienestarSImple</string>
 </resources>

@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.miprimeraaplicacion"
+    namespace = "com.example.appdevienestarsimple"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.miprimeraaplicacion"
+        applicationId = "com.example.appdevienestarsimple"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
@@ -50,8 +50,7 @@ android {
 }
 
 dependencies {
-
-    implementation(libs.androidx.material.icons.extended)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
