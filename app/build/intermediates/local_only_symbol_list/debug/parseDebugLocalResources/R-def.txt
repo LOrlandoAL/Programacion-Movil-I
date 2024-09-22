@@ -1,0 +1,15 @@
+R_DEF: Internal format may change without notice
+local
+drawable ic_launcher_background
+drawable ic_launcher_foreground
+drawable money
+drawable percent
+mipmap ic_launcher
+mipmap ic_launcher_round
+string app_name
+string bill_amount
+string calculate_tip
+string how_was_the_service
+string round_up_tip
+string tip_amount
+style Theme.TipTime

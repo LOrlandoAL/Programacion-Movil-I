@@ -1,0 +1,66 @@
+[
+    {
+        "merged": "com.example.tiptime.app-debug-44:/mipmap-xxhdpi_ic_launcher_round.webp.flat",
+        "source": "com.example.tiptime.app-main-46:/mipmap-xxhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.example.tiptime.app-debug-44:/drawable_ic_launcher_background.xml.flat",
+        "source": "com.example.tiptime.app-main-46:/drawable/ic_launcher_background.xml"
+    },
+    {
+        "merged": "com.example.tiptime.app-debug-44:/mipmap-hdpi_ic_launcher_round.webp.flat",
+        "source": "com.example.tiptime.app-main-46:/mipmap-hdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.example.tiptime.app-debug-44:/mipmap-mdpi_ic_launcher.webp.flat",
+        "source": "com.example.tiptime.app-main-46:/mipmap-mdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.example.tiptime.app-debug-44:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "com.example.tiptime.app-main-46:/drawable/ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "com.example.tiptime.app-debug-44:/mipmap-hdpi_ic_launcher.webp.flat",
+        "source": "com.example.tiptime.app-main-46:/mipmap-hdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.example.tiptime.app-debug-44:/mipmap-xxhdpi_ic_launcher.webp.flat",
+        "source": "com.example.tiptime.app-main-46:/mipmap-xxhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.example.tiptime.app-debug-44:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "com.example.tiptime.app-main-46:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "com.example.tiptime.app-debug-44:/drawable_percent.xml.flat",
+        "source": "com.example.tiptime.app-main-46:/drawable/percent.xml"
+    },
+    {
+        "merged": "com.example.tiptime.app-debug-44:/drawable_money.xml.flat",
+        "source": "com.example.tiptime.app-main-46:/drawable/money.xml"
+    },
+    {
+        "merged": "com.example.tiptime.app-debug-44:/mipmap-xhdpi_ic_launcher_round.webp.flat",
+        "source": "com.example.tiptime.app-main-46:/mipmap-xhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.example.tiptime.app-debug-44:/mipmap-mdpi_ic_launcher_round.webp.flat",
+        "source": "com.example.tiptime.app-main-46:/mipmap-mdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.example.tiptime.app-debug-44:/mipmap-xxxhdpi_ic_launcher_round.webp.flat",
+        "source": "com.example.tiptime.app-main-46:/mipmap-xxxhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.example.tiptime.app-debug-44:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "com.example.tiptime.app-main-46:/mipmap-anydpi-v26/ic_launcher_round.xml"
+    },
+    {
+        "merged": "com.example.tiptime.app-debug-44:/mipmap-xxxhdpi_ic_launcher.webp.flat",
+        "source": "com.example.tiptime.app-main-46:/mipmap-xxxhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.example.tiptime.app-debug-44:/mipmap-xhdpi_ic_launcher.webp.flat",
+        "source": "com.example.tiptime.app-main-46:/mipmap-xhdpi/ic_launcher.webp"
+    }
+]

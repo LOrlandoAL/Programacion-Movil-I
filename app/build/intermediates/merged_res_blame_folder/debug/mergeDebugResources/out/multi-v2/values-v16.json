@@ -1,0 +1,19 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.example.tiptime.app-mergeDebugResources-42:/values-v16/values-v16.xml",
+            "map": [
+                {
+                    "source": "/home/olry/.gradle/caches/transforms-4/cfe142bfe49812ef291ae29705eda67e/transformed/core-1.12.0/res/values-v16/values-v16.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "65",
+                        "endOffsets": "116"
+                    }
+                }
+            ]
+        }
+    ]
+}
