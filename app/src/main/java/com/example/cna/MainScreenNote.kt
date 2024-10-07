@@ -1,6 +1,7 @@
 package com.example.cna
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -10,8 +11,9 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -20,6 +22,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.cna.ui.theme.CNATheme
 
 class MainActivity : ComponentActivity() {
@@ -28,14 +34,50 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             CNATheme {
+                val navController = rememberNavController()
+                var showSaveButton by remember { mutableStateOf(false) } // Controlar cuándo mostrar el botón de guardar
+
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
-                    topBar = { AppBar() },
-                    floatingActionButton = { AddNoteButton() }
+                    topBar = { AppBar(showSaveButton, onSaveClick = {
+                        // Al hacer clic en guardar, mostramos un mensaje y navegamos a la pantalla principal
+                        Toast.makeText(this, "Guardado", Toast.LENGTH_SHORT).show()
+                        navController.popBackStack() // Volver a la pantalla anterior
+                    }) },
+                    floatingActionButton = {
+                        // Mostrar el botón solo si no estamos en la pantalla de edición
+                        if (!showSaveButton) {
+                            AddNoteButton(navController)
+                        }
+                    }
                 ) { innerPadding ->
-                    MainScreen(Modifier.padding(innerPadding))
+                    NavigationHost(
+                        navController = navController,
+                        modifier = Modifier.padding(innerPadding),
+                        onNavigateToEditNote = { showSaveButton = true }, // Mostrar botón de guardar
+                        onNavigateBack = { showSaveButton = false } // Ocultar el botón de guardar al volver
+                    )
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun NavigationHost(
+    navController: NavHostController,
+    modifier: Modifier = Modifier,
+    onNavigateToEditNote: () -> Unit,
+    onNavigateBack: () -> Unit
+) {
+    NavHost(navController = navController, startDestination = "mainScreen") {
+        composable("mainScreen") {
+            MainScreen(modifier = modifier)
+            onNavigateBack()
+        }
+        composable("addEditNote") {
+            NoteScreen()
+            onNavigateToEditNote()
         }
     }
 }
@@ -47,7 +89,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        //Frase del dia
+        // Frase del dia
         QuoteOfTheDay(
             text = "Yo solo sé que tú y yo no sabemos nada.",
             author = "Rogelio Fabricio (2022)"
@@ -56,7 +98,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
         HorizontalDivider(thickness = 2.dp, color = Color(0xFF3F51B5))
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Lista de notas, previwe
+        // Lista de notas
         NoteList(
             notes = listOf(
                 "Nota 1" to "Contenido breve de la nota 1",
@@ -70,9 +112,19 @@ fun MainScreen(modifier: Modifier = Modifier) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppBar() {
+fun AppBar(showSaveButton: Boolean, onSaveClick: () -> Unit) {
     TopAppBar(
         title = { Text("C.N.A") },
+        actions = {
+            if (showSaveButton) {
+                IconButton(onClick = onSaveClick) {
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = "Guardar"
+                    )
+                }
+            }
+        },
         colors = TopAppBarDefaults.mediumTopAppBarColors(
             containerColor = Color(0xFF3F51B5),
             titleContentColor = Color.White
@@ -81,31 +133,11 @@ fun AppBar() {
 }
 
 @Composable
-fun QuoteOfTheDay(text: String, author: String) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(//frase del autor
-            text = text,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onBackground
-        )
-        Text(//nombre del autor
-            text = "- $author",
-            fontSize = 16.sp,
-            color = MaterialTheme.colorScheme.onBackground
-        )
-    }
-}
-
-@Composable
-fun AddNoteButton() {
+fun AddNoteButton(navController: NavHostController) {
     FloatingActionButton(
-        onClick = { /* Acción para agregar nueva nota */ },
+        onClick = {
+            navController.navigate("addEditNote")
+        },
         containerColor = Color.Transparent,
         modifier = Modifier.size(56.dp)
     ) {
@@ -129,6 +161,27 @@ fun AddNoteButton() {
                 tint = Color.White
             )
         }
+    }
+}
+@Composable
+fun QuoteOfTheDay(text: String, author: String) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = text,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onBackground
+        )
+        Text(
+            text = "- $author",
+            fontSize = 16.sp,
+            color = MaterialTheme.colorScheme.onBackground
+        )
     }
 }
 
@@ -178,8 +231,6 @@ fun NoteCard(title: String, content: String) {
         }
     }
 }
-
-
 
 @Preview(showBackground = true)
 @Composable

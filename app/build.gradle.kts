@@ -54,7 +54,8 @@ dependencies {
     // Dependencias necesarias para Jetpack Compose
     implementation(libs.androidx.material3.v110) // Material 3
     implementation(libs.androidx.ui.v150) // Composables de UI
-    implementation(libs.androidx.ui.tooling.preview.v150) // Vistas previas
+    implementation(libs.androidx.ui.tooling.preview.v150)
+    implementation(libs.androidx.navigation.compose) // Vistas previas
     debugImplementation(libs.ui.tooling) // Herramientas adicionales para vistas previas
     debugImplementation(libs.ui.test.manifest) // Manifesto para las pruebas
 
@@ -65,7 +66,6 @@ dependencies {
     implementation(libs.ui.tooling.preview)
     implementation(libs.androidx.foundation)
     implementation(libs.androidx.lifecycle.runtime.compose)
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -81,4 +81,5 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
 }
