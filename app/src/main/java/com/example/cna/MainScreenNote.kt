@@ -1,19 +1,42 @@
 package com.example.cna
-
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -22,11 +45,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.cna.ui.theme.CNATheme
+import kotlin.random.Random
+import androidx.lifecycle.ViewModel
+
+class SharedViewModel : ViewModel() {
+    val myMap: HashMap<String, String> = HashMap()
+
+}
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,7 +104,7 @@ fun NavigationHost(
 ) {
     NavHost(navController = navController, startDestination = "mainScreen") {
         composable("mainScreen") {
-            MainScreen(modifier = modifier)
+            MainScreen(modifier = modifier,)
             onNavigateBack()
         }
         composable("addEditNote") {
@@ -84,6 +116,9 @@ fun NavigationHost(
 
 @Composable
 fun MainScreen(modifier: Modifier = Modifier) {
+
+    val (indice, frase)=Frases()
+    val autor= Autores(indice)
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -91,8 +126,8 @@ fun MainScreen(modifier: Modifier = Modifier) {
     ) {
         // Frase del dia
         QuoteOfTheDay(
-            text = "Yo solo sé que tú y yo no sabemos nada.",
-            author = "Rogelio Fabricio (2022)"
+            text = frase,
+            author = autor,
         )
         Spacer(modifier = Modifier.height(8.dp))
         HorizontalDivider(thickness = 2.dp, color = Color(0xFF3F51B5))
@@ -164,7 +199,7 @@ fun AddNoteButton(navController: NavHostController) {
     }
 }
 @Composable
-fun QuoteOfTheDay(text: String, author: String) {
+fun QuoteOfTheDay(text: String, author: String,) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -239,3 +274,37 @@ fun GreetingPreview() {
         MainScreen()
     }
 }
+fun Frases(): Pair<Int, String> {
+    // Crear el HashMap
+    val myMap: HashMap<Int, String> = HashMap()
+
+    // Agregar elementos
+    myMap[1] = "El hombre que domina al hombre es admirable, el hombre que se domina a si mismo es invencible "
+    myMap[2] = "Todos somos genios, pero si gusgas a un pez por su habilidad de escalar un árbol, vivirá su vida entera creyendo que es estúpido"
+    myMap[3] = "Conócete a ti mismo, conoce el terreno, el clima, al enemigo y podrás librar cien batallas sin correr ningún riesgo de derrota"
+    myMap[4] = "Todos nuestros sueños se pueden convertir en realidad  si tenemos el coraje de seguirlos"
+
+
+    // Obtener una lista de valores del HashMap
+    val valores = myMap.values.toList() // Convertir a lista
+
+    // Seleccionar un valor aleatorio
+    val indiceAleatorio = Random.nextInt(valores.size) // Selecciona un índice aleatorio
+    println(indiceAleatorio)
+    val valorAleatorio = valores[indiceAleatorio-1]
+
+    // Devolver el valor aleatorio
+    return Pair(indiceAleatorio, valorAleatorio)
+}
+fun Autores(indice:Int ): String {
+    // Crear el HashMap
+    val myMap: HashMap<Int, String> = HashMap()
+    // Agregar elementos
+    myMap[1] = "Friedrich Nietzsche"
+    myMap[2] = "Albert Einstein"
+    myMap[3] = "Sun Tzu"
+    myMap[4] = "Walt Disney"
+
+    return myMap[indice] ?: "Autor no encontrado"
+}
+
