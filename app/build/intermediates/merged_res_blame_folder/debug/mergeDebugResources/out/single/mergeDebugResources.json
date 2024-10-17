@@ -1,0 +1,110 @@
+[
+    {
+        "merged": "com.example.reply.app-debug-48:/mipmap-xhdpi_ic_launcher_round.webp.flat",
+        "source": "com.example.reply.app-main-50:/mipmap-xhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.example.reply.app-debug-48:/drawable_avatar_6.jpg.flat",
+        "source": "com.example.reply.app-main-50:/drawable/avatar_6.jpg"
+    },
+    {
+        "merged": "com.example.reply.app-debug-48:/drawable_avatar_4.jpg.flat",
+        "source": "com.example.reply.app-main-50:/drawable/avatar_4.jpg"
+    },
+    {
+        "merged": "com.example.reply.app-debug-48:/xml_data_extraction_rules.xml.flat",
+        "source": "com.example.reply.app-main-50:/xml/data_extraction_rules.xml"
+    },
+    {
+        "merged": "com.example.reply.app-debug-48:/mipmap-hdpi_ic_launcher.webp.flat",
+        "source": "com.example.reply.app-main-50:/mipmap-hdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.example.reply.app-debug-48:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "com.example.reply.app-main-50:/mipmap-anydpi-v26/ic_launcher_round.xml"
+    },
+    {
+        "merged": "com.example.reply.app-debug-48:/drawable_avatar_1.jpg.flat",
+        "source": "com.example.reply.app-main-50:/drawable/avatar_1.jpg"
+    },
+    {
+        "merged": "com.example.reply.app-debug-48:/mipmap-xxhdpi_ic_launcher_round.webp.flat",
+        "source": "com.example.reply.app-main-50:/mipmap-xxhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.example.reply.app-debug-48:/mipmap-hdpi_ic_launcher_round.webp.flat",
+        "source": "com.example.reply.app-main-50:/mipmap-hdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.example.reply.app-debug-48:/drawable_ic_launcher_background.xml.flat",
+        "source": "com.example.reply.app-main-50:/drawable/ic_launcher_background.xml"
+    },
+    {
+        "merged": "com.example.reply.app-debug-48:/mipmap-xxxhdpi_ic_launcher_round.webp.flat",
+        "source": "com.example.reply.app-main-50:/mipmap-xxxhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.example.reply.app-debug-48:/xml_backup_rules.xml.flat",
+        "source": "com.example.reply.app-main-50:/xml/backup_rules.xml"
+    },
+    {
+        "merged": "com.example.reply.app-debug-48:/drawable_avatar_3.jpg.flat",
+        "source": "com.example.reply.app-main-50:/drawable/avatar_3.jpg"
+    },
+    {
+        "merged": "com.example.reply.app-debug-48:/drawable_avatar_8.jpg.flat",
+        "source": "com.example.reply.app-main-50:/drawable/avatar_8.jpg"
+    },
+    {
+        "merged": "com.example.reply.app-debug-48:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "com.example.reply.app-main-50:/drawable/ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "com.example.reply.app-debug-48:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "com.example.reply.app-main-50:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "com.example.reply.app-debug-48:/mipmap-xhdpi_ic_launcher.webp.flat",
+        "source": "com.example.reply.app-main-50:/mipmap-xhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.example.reply.app-debug-48:/mipmap-mdpi_ic_launcher_round.webp.flat",
+        "source": "com.example.reply.app-main-50:/mipmap-mdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.example.reply.app-debug-48:/drawable_avatar_5.jpg.flat",
+        "source": "com.example.reply.app-main-50:/drawable/avatar_5.jpg"
+    },
+    {
+        "merged": "com.example.reply.app-debug-48:/drawable_logo.xml.flat",
+        "source": "com.example.reply.app-main-50:/drawable/logo.xml"
+    },
+    {
+        "merged": "com.example.reply.app-debug-48:/drawable_avatar_express.png.flat",
+        "source": "com.example.reply.app-main-50:/drawable/avatar_express.png"
+    },
+    {
+        "merged": "com.example.reply.app-debug-48:/mipmap-mdpi_ic_launcher.webp.flat",
+        "source": "com.example.reply.app-main-50:/mipmap-mdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.example.reply.app-debug-48:/mipmap-xxhdpi_ic_launcher.webp.flat",
+        "source": "com.example.reply.app-main-50:/mipmap-xxhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.example.reply.app-debug-48:/drawable_avatar_0.jpg.flat",
+        "source": "com.example.reply.app-main-50:/drawable/avatar_0.jpg"
+    },
+    {
+        "merged": "com.example.reply.app-debug-48:/mipmap-xxxhdpi_ic_launcher.webp.flat",
+        "source": "com.example.reply.app-main-50:/mipmap-xxxhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.example.reply.app-debug-48:/drawable_avatar_7.jpg.flat",
+        "source": "com.example.reply.app-main-50:/drawable/avatar_7.jpg"
+    },
+    {
+        "merged": "com.example.reply.app-debug-48:/drawable_avatar_2.jpg.flat",
+        "source": "com.example.reply.app-main-50:/drawable/avatar_2.jpg"
+    }
+]
