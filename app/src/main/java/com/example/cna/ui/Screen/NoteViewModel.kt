@@ -25,7 +25,7 @@ class NoteViewModel @Inject constructor(
     val notes: Flow<List<Note>> = repository.getAllNotes()
 
     private val _state = MutableStateFlow(NoteState())
-    val state: StateFlow<NoteState> = _state.asStateFlow()
+    var state: StateFlow<NoteState> = _state.asStateFlow()
 
     private val _event = Channel<UiEvent>()
     val event: Flow<UiEvent> = _event.receiveAsFlow()
@@ -39,7 +39,8 @@ class NoteViewModel @Inject constructor(
                             id = note.id,
                             title = note.title,
                             content = note.content,
-                            imageUris = note.imageUris
+                            imageUris = note.imageUris,
+                            AudioUris = note.AudioUris
                         )
                     }
                 }
@@ -62,6 +63,12 @@ class NoteViewModel @Inject constructor(
                 }
 
             }
+            is NoteEvent.AddAudio -> {
+                _state.update { current ->
+                    val uniqueUris = (current.AudioUris + event.uri).distinct()
+                    current.copy(AudioUris = uniqueUris)
+                }
+            }
 
             NoteEvent.NavigateBack -> {
                 sendEvent(UiEvent.NavigateBack)
@@ -82,7 +89,8 @@ class NoteViewModel @Inject constructor(
                             id = id,
                             title = state.value.title,
                             content = state.value.content,
-                            imageUris = state.value.imageUris
+                            imageUris = state.value.imageUris,
+                            AudioUris = state.value.AudioUris
                         )
                         repository.deleteNote(note)
                     }
@@ -99,7 +107,8 @@ class NoteViewModel @Inject constructor(
                 id = currentState.id,
                 title = currentState.title,
                 content = currentState.content,
-                imageUris = currentState.imageUris.distinct()
+                imageUris = currentState.imageUris.distinct(),
+                AudioUris = currentState.AudioUris.distinct()
             )
             if (currentState.id == null) {
                 repository.insertNote(note)
@@ -122,7 +131,8 @@ class NoteViewModel @Inject constructor(
                     id = note.id,
                     title = note.title,
                     content = note.content,
-                    imageUris = note.imageUris.distinct()
+                    imageUris = note.imageUris.distinct(),
+                    AudioUris = note.AudioUris.distinct()
                 )
             }
         }

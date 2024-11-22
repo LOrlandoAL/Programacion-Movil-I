@@ -1,6 +1,9 @@
 package com.example.cna.ui.Screen
 
 
+import android.media.MediaPlayer
+import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.background
@@ -10,6 +13,7 @@ import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -18,7 +22,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import com.example.cna.componentes.AudioRecorderButton
 import com.example.cna.componentes.CameraButton
+import androidx.compose.ui.platform.LocalContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -30,6 +36,26 @@ fun NoteScreen(
     val viewModel: NoteViewModel = hiltViewModel()
     LaunchedEffect(noteId) {
         noteId?.let { viewModel.loadNoteById(it) }
+    }
+    // MediaPlayer para reproducción
+    var mediaPlayer: MediaPlayer? = remember { null }
+    val context = LocalContext.current
+
+    fun playAudio(uri: String) {
+        try {
+            // Libera el MediaPlayer actual si está en uso
+            mediaPlayer?.release()
+            mediaPlayer = MediaPlayer().apply {
+                setDataSource(context, Uri.parse(uri))
+                setOnPreparedListener {
+                    it.start() // Comienza la reproducción cuando el audio está listo
+                }
+                prepareAsync() // Carga el archivo de audio de forma asincrónica
+            }
+
+        } catch (e: Exception) {
+            Log.e("AudioPlayback", "Error al reproducir el audio", e)
+        }
     }
     Scaffold(
         topBar = {
@@ -86,7 +112,16 @@ fun NoteScreen(
                         }
                     }
                 })
+                // Botón de grabación de audio
+                AudioRecorderButton(onAudiosCaptured = { uris ->
+                    uris.forEach { uri ->
+                        if (!state.AudioUris.contains(uri.toString())) {
+                            onEvent(NoteEvent.AddAudio(uri.toString()))
+                        }
+                    }
+                })
             }
+
 
             // Mostrar imágenes capturadas usando AsyncImage
             items(state.imageUris.size) { index ->
@@ -99,6 +134,37 @@ fun NoteScreen(
                         .height(200.dp),
                     contentScale = ContentScale.Crop
                 )
+            }
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Mostrar lista de audios
+                Text(
+                    text = "Audios guardados:",
+                    style = TextStyle(fontSize = 18.sp, color = Color.Black),
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+            }
+
+            items(state.AudioUris.size) { index ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                        .background(Color.LightGray),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "Audio ${index + 1}",
+                        style = TextStyle(fontSize = 16.sp, color = Color.Black),
+                        modifier = Modifier.padding(8.dp)
+                    )
+                    Button(onClick = {
+                        playAudio(state.AudioUris[index]) // Reproduce el audio
+                    }) {
+                        Text(text = "Reproducir")
+                    }
+                }
             }
 
             item {
