@@ -7,7 +7,7 @@ import com.example.cna.datos.NoteDao
 import com.example.cna.datos.NoteEntity
 import com.example.cna.domain.Converters
 
-@Database(entities = [NoteEntity::class], version = 3, exportSchema = true)
+@Database(entities = [NoteEntity::class], version = 4, exportSchema = true)
 @TypeConverters(Converters::class)
 abstract  class NoteDatabase : RoomDatabase() {
     abstract val dao: NoteDao

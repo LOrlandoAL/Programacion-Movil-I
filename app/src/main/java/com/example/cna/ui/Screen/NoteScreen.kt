@@ -4,6 +4,7 @@ package com.example.cna.ui.Screen
 import android.media.MediaPlayer
 import android.net.Uri
 import android.util.Log
+import android.view.View
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.background
@@ -25,6 +26,10 @@ import coil.compose.AsyncImage
 import com.example.cna.componentes.AudioRecorderButton
 import com.example.cna.componentes.CameraButton
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.PlayerView
+import com.example.cna.componentes.VideoCaptureButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -120,6 +125,13 @@ fun NoteScreen(
                         }
                     }
                 })
+                VideoCaptureButton(onVideoCaptured = { uri ->
+                    uri?.let {
+                        if (!state.videosUris.contains(it.toString())) {
+                            onEvent(NoteEvent.AddVideo(it.toString()))
+                        }
+                    }
+                })
             }
 
 
@@ -145,7 +157,35 @@ fun NoteScreen(
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
             }
+            // Mostrar imágenes capturadas usando AsyncImage
+            items(state.videosUris.size) { index ->
+                Spacer(modifier = Modifier.height(16.dp))
+                val videoUri = state.videosUris[index]
 
+                AndroidView(
+                    factory = { ctx ->
+                        PlayerView(ctx).apply {
+                            val exoPlayer = ExoPlayer.Builder(ctx).build().apply {
+                                setMediaItem(androidx.media3.common.MediaItem.fromUri(videoUri))
+                                prepare()
+                                playWhenReady = false
+                            }
+                            player = exoPlayer
+
+                            // Libera recursos del ExoPlayer cuando la vista se destruye
+                            addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
+                                override fun onViewAttachedToWindow(view: View) {}
+                                override fun onViewDetachedFromWindow(view: View) {
+                                    exoPlayer.release()
+                                }
+                            })
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                )
+            }
             items(state.AudioUris.size) { index ->
                 Row(
                     modifier = Modifier

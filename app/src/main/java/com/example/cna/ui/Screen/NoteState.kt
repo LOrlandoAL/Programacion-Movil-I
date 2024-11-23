@@ -5,5 +5,6 @@ data class NoteState(
     val title: String = "",
     val content: String = "",
     val imageUris: List<String> = emptyList(),
-    val AudioUris: List<String> = emptyList()
+    val AudioUris: List<String> = emptyList(),
+    val videosUris: List<String> = emptyList(),
 )

@@ -40,7 +40,8 @@ class NoteViewModel @Inject constructor(
                             title = note.title,
                             content = note.content,
                             imageUris = note.imageUris,
-                            AudioUris = note.AudioUris
+                            AudioUris = note.AudioUris,
+                            videosUris = note.videosUris
                         )
                     }
                 }
@@ -69,6 +70,12 @@ class NoteViewModel @Inject constructor(
                     current.copy(AudioUris = uniqueUris)
                 }
             }
+            is NoteEvent.AddVideo -> {
+                _state.update { current ->
+                    val uniqueUris = (current.videosUris + event.uri).distinct()
+                    current.copy(videosUris = uniqueUris)
+                }
+            }
 
             NoteEvent.NavigateBack -> {
                 sendEvent(UiEvent.NavigateBack)
@@ -90,7 +97,8 @@ class NoteViewModel @Inject constructor(
                             title = state.value.title,
                             content = state.value.content,
                             imageUris = state.value.imageUris,
-                            AudioUris = state.value.AudioUris
+                            AudioUris = state.value.AudioUris,
+                            videosUris = state.value.videosUris
                         )
                         repository.deleteNote(note)
                     }
@@ -108,7 +116,8 @@ class NoteViewModel @Inject constructor(
                 title = currentState.title,
                 content = currentState.content,
                 imageUris = currentState.imageUris.distinct(),
-                AudioUris = currentState.AudioUris.distinct()
+                AudioUris = currentState.AudioUris.distinct(),
+                videosUris= currentState.videosUris.distinct()
             )
             if (currentState.id == null) {
                 repository.insertNote(note)
@@ -132,7 +141,8 @@ class NoteViewModel @Inject constructor(
                     title = note.title,
                     content = note.content,
                     imageUris = note.imageUris.distinct(),
-                    AudioUris = note.AudioUris.distinct()
+                    AudioUris = note.AudioUris.distinct(),
+                    videosUris = note.videosUris.distinct()
                 )
             }
         }

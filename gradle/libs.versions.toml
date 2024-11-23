@@ -21,6 +21,7 @@ uiVersion = "1.5.0"
 navigationCompose = "2.8.2"
 roomCommon = "2.6.1"
 roomCommonJvm = "2.7.0-alpha11"
+media3CommonKtx = "1.4.1"
 
 [libraries]
 androidx-activity-compose-v170 = { module = "androidx.activity:activity-compose", version.ref = "activityComposeVersion" }
@@ -51,6 +52,7 @@ ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", versio
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 androidx-room-common = { group = "androidx.room", name = "room-common", version.ref = "roomCommon" }
 androidx-room-common-jvm = { group = "androidx.room", name = "room-common-jvm", version.ref = "roomCommonJvm" }
+androidx-media3-common-ktx = { group = "androidx.media3", name = "media3-common-ktx", version = "1.5.0-rc02" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
