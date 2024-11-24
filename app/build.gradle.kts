@@ -115,4 +115,7 @@ dependencies {
     //Videos
     implementation ("androidx.media3:media3-exoplayer:1.4.1")
     implementation ("androidx.media3:media3-ui:1.4.1")
+    //notificaciones
+    implementation ("com.google.firebase:firebase-messaging:23.1.1")
+
 }

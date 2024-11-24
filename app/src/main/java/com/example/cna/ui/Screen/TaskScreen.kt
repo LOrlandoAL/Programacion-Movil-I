@@ -1,5 +1,8 @@
 package com.example.cna.ui.Screen
 
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Intent
 import android.media.MediaPlayer
 import android.net.Uri
 import android.util.Log
@@ -28,7 +31,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
+import com.example.cna.componentes.DatePickerFecha
 import com.example.cna.componentes.VideoCaptureButton
+import android.content.Context
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,8 +47,13 @@ fun taskScreen(
 ) {
     val viewModel: TaskViewModel = hiltViewModel()
     LaunchedEffect(tareaid) {
-        tareaid?.let { viewModel.loadNoteById(it) }
+        tareaid?.let { viewModel.loadTaskById(it) }
     }
+    // Formateador de fecha y hora
+    val dateFormatter = remember {
+        SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+    }
+    val formattedDateTime = state.dateTimeMillis?.let { dateFormatter.format(Date(it)) } ?: "Sin fecha"
     // MediaPlayer para reproducción
     var mediaPlayer: MediaPlayer? = remember { null }
     val context = LocalContext.current
@@ -107,6 +120,16 @@ fun taskScreen(
                     }
                 )
             }
+            item {
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Mostrar la fecha y hora
+                Text(
+                    text = "Fecha y hora: $formattedDateTime",
+                    style = TextStyle(fontSize = 16.sp, color = Color.DarkGray),
+                    modifier = Modifier.padding(horizontal = 8.dp)
+                )
+            }
 
             item {
                 CameraButton(onImagesCaptured = { uri ->
@@ -131,6 +154,17 @@ fun taskScreen(
                         }
                     }
                 })
+                DatePickerFecha { selectedCalendar ->
+                    // Extrae el contexto desde el entorno de composición
+                    val appContext = context.applicationContext
+                    scheduleNotification(
+                        context = appContext,
+                        calendar = selectedCalendar,
+                        taskTitle = state.title
+                    )
+                }
+
+
             }
 
 
@@ -242,4 +276,22 @@ fun taskScreen(
             }
         }
     }
+}
+fun scheduleNotification(context: Context, calendar: java.util.Calendar, taskTitle: String) {
+    val intent = Intent(context, NotificationReceiver::class.java).apply {
+        putExtra("taskTitle", taskTitle)
+    }
+    val pendingIntent = PendingIntent.getBroadcast(
+        context,
+        0,
+        intent,
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+    )
+
+    val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+    alarmManager.setExactAndAllowWhileIdle(
+        AlarmManager.RTC_WAKEUP,
+        calendar.timeInMillis,
+        pendingIntent
+    )
 }

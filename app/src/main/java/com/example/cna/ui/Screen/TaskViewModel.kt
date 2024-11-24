@@ -3,8 +3,6 @@ package com.example.cna.ui.Screen
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.cna.domain.Note
-import com.example.cna.domain.NoteRepository
 import com.example.cna.domain.Tarea
 import com.example.cna.domain.TareaRepository
 import com.example.cna.util.UiEvent
@@ -43,7 +41,9 @@ class TaskViewModel @Inject constructor(
                             content = tarea.content,
                             imageUris = tarea.imageUris,
                             AudioUris = tarea.AudioUris,
-                            videosUris = tarea.videosUris
+                            videosUris = tarea.videosUris,
+                            dateTimeMillis = tarea.dateTimeMillis,
+                            isCompleted = tarea.isCompleted
                         )
                     }
                 }
@@ -78,6 +78,12 @@ class TaskViewModel @Inject constructor(
                     current.copy(videosUris = uniqueUris)
                 }
             }
+            is TareaEvent.DateChange -> {
+                _state.value = _state.value.copy(dateTimeMillis = event.dateTimeMillis)
+            }
+            is TareaEvent.CompleteStatusChange -> {
+                _state.value = _state.value.copy(isCompleted = event.isComplete)
+            }
 
             TareaEvent.NavigateBack -> {
                 sendEvent(UiEvent.NavigateBack)
@@ -100,7 +106,9 @@ class TaskViewModel @Inject constructor(
                             content = state.value.content,
                             imageUris = state.value.imageUris,
                             AudioUris = state.value.AudioUris,
-                            videosUris = state.value.videosUris
+                            videosUris = state.value.videosUris,
+                            dateTimeMillis = state.value.dateTimeMillis ?: System.currentTimeMillis(),
+                            isCompleted = state.value.isCompleted
                         )
                         repository.deletetask(tarea)
                     }
@@ -119,7 +127,9 @@ class TaskViewModel @Inject constructor(
                 content = currentState.content,
                 imageUris = currentState.imageUris.distinct(),
                 AudioUris = currentState.AudioUris.distinct(),
-                videosUris= currentState.videosUris.distinct()
+                videosUris= currentState.videosUris.distinct(),
+                dateTimeMillis = currentState.dateTimeMillis ?: System.currentTimeMillis(),
+                isCompleted= currentState.isCompleted
             )
             if (currentState.id == null) {
                 repository.insertTask(tarea)
@@ -135,16 +145,18 @@ class TaskViewModel @Inject constructor(
             _event.send(event)
         }
     }
-    fun loadNoteById(noteId: Int) {
+    fun loadTaskById(tareaId: Int) {
         viewModelScope.launch {
-            repository.getTareaById(noteId)?.let { note ->
+            repository.getTareaById(tareaId)?.let { tarea ->
                 _state.value = _state.value.copy(
-                    id = note.id,
-                    title = note.title,
-                    content = note.content,
-                    imageUris = note.imageUris.distinct(),
-                    AudioUris = note.AudioUris.distinct(),
-                    videosUris = note.videosUris.distinct()
+                    id = tarea.id,
+                    title = tarea.title,
+                    content = tarea.content,
+                    imageUris = tarea.imageUris.distinct(),
+                    AudioUris = tarea.AudioUris.distinct(),
+                    videosUris = tarea.videosUris.distinct(),
+                    dateTimeMillis = tarea.dateTimeMillis,
+                    isCompleted = tarea.isCompleted
                 )
             }
         }

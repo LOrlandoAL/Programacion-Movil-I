@@ -13,9 +13,9 @@ fun Note.toEntity(): NoteEntity = NoteEntity(
     id, title, content, imageUris, AudioUris,videosUris
 )
 fun TareaEntity.asExternalModel(): Tarea = Tarea(
-    id, title, content, imageUris, AudioUris,videosUris
+    id, title, content, imageUris, AudioUris,videosUris,dateTimeMillis, isCompleted
 )
 
 fun Tarea.toEntity(): TareaEntity = TareaEntity(
-    id, title, content, imageUris, AudioUris,videosUris
+    id, title, content, imageUris, AudioUris,videosUris, dateTimeMillis, isCompleted
 )

@@ -11,4 +11,6 @@ data class TareaEntity(
     val imageUris: List<String> = emptyList(),
     val AudioUris: List<String> = emptyList(),
     val videosUris: List<String> = emptyList(),
+    val dateTimeMillis: Long?,
+    val isCompleted: Boolean = false
 )
