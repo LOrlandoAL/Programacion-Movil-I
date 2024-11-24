@@ -2,6 +2,10 @@ import android.content.Context
 import androidx.room.Room
 import com.example.cna.datos.NoteDao
 import com.example.cna.datos.di.NoteDatabase
+import com.example.cna.domain.NoteRepository
+import com.example.cna.domain.NoteRepositoryImpl
+import com.example.cna.domain.TareaRepository
+import com.example.cna.domain.TareaRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,16 +19,20 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideDatabase(@ApplicationContext context: Context): NoteDatabase {
-        return Room.databaseBuilder(
+    fun provideNoteDatabase(@ApplicationContext context: Context): NoteDatabase =
+        Room.databaseBuilder(
             context,
             NoteDatabase::class.java,
-            "note_database"
+            NoteDatabase.name
         ).build()
-    }
 
     @Provides
-    fun provideNoteDao(database: NoteDatabase): NoteDao {
-        return database.dao
-    }
+    @Singleton
+    fun provideNoteRepository(database: NoteDatabase): NoteRepository =
+        NoteRepositoryImpl(dao = database.noteDao)
+    @Provides
+    @Singleton
+    fun provideTaskRepository(database: NoteDatabase): TareaRepository =
+        TareaRepositoryImpl(dao = database.taskDao)
+
 }

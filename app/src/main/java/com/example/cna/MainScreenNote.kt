@@ -5,8 +5,8 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.icons.Icons
@@ -42,10 +41,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -55,10 +52,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.cna.theme.CNATheme
 import kotlin.random.Random
-import androidx.lifecycle.ViewModel
 import com.example.cna.ui.Screen.NoteEvent
 import com.example.cna.ui.Screen.NoteScreen
-import dagger.hilt.EntryPoint
+import com.example.cna.ui.Screen.TareaEvent
+import com.example.cna.ui.Screen.TaskViewModel
+import com.example.cna.ui.Screen.taskScreen
 import dagger.hilt.android.AndroidEntryPoint
 import com.example.cna.ui.Screen.NoteViewModel as NoteViewModel
 
@@ -66,7 +64,6 @@ import com.example.cna.ui.Screen.NoteViewModel as NoteViewModel
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
@@ -76,34 +73,56 @@ class MainActivity : ComponentActivity() {
 
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
-                    topBar = { AppBar(showSaveButton, onSaveClick = {
-                        // Al hacer clic en guardar, mostramos un mensaje y navegamos a la pantalla principal
-                        Toast.makeText(this, "Guardado", Toast.LENGTH_SHORT).show()
-                        navController.popBackStack() // Volver a la pantalla anterior
-                    }) },
+                    topBar = {
+                        AppBar(
+                            showSaveButton = showSaveButton,
+                            onSaveClick = {
+                                Toast.makeText(this, "Guardado", Toast.LENGTH_SHORT).show()
+                                navController.popBackStack()
+                            }
+                        )
+                    },
                     floatingActionButton = {
-                        if (!showSaveButton) {
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            if (!showSaveButton) {
+                                FloatingActionButton(
+                                    onClick = {
+                                        try {
+                                            navController.navigate("AddEditNote/-1")
+                                        } catch (e: Exception) {
+                                            Log.e("MainActivity", "Navigation error: ${e.message}")
+                                        }
+                                    },
+                                    modifier = Modifier
+                                        .align(Alignment.BottomEnd)
+                                        .padding(16.dp) // Espaciado desde los bordes
+                                ) {
+                                    Icon(imageVector = Icons.Default.Add, contentDescription = "Agregar nota")
+                                }
+                            }
+
                             FloatingActionButton(
                                 onClick = {
                                     try {
-                                        navController.navigate("AddEditNote/-1")
+                                        navController.navigate("AddEditTask/-1")
                                     } catch (e: Exception) {
                                         Log.e("MainActivity", "Navigation error: ${e.message}")
                                     }
-                                }
-                            )
-                            {
-                                Icon(imageVector = Icons.Default.Add, contentDescription = "Agregar nota")
+                                },
+                                modifier = Modifier
+                                    .align(Alignment.BottomStart)
+                                    .padding(16.dp) // Espaciado desde los bordes
+                            ) {
+                                Icon(imageVector = Icons.Default.Add, contentDescription = "Agregar tarea")
                             }
                         }
                     }
-
                 ) { innerPadding ->
                     NavigationHost(
                         navController = navController,
                         modifier = Modifier.padding(innerPadding),
-                        onNavigateToEditNote = { showSaveButton = true }, // Mostrar botón de guardar
-                        onNavigateBack = { showSaveButton = false } // Ocultar el botón de guardar al volver
+                        onNavigateToEditNote = { showSaveButton = true },
+                        onNavigateBack = { showSaveButton = false }
                     )
                 }
             }
@@ -126,6 +145,12 @@ fun NavigationHost(
                     onNavigateToEditNote()
                     navController.navigate("AddEditNote/$noteId")
                 }
+                ,
+                onEditTask = { tareaId ->
+                    onNavigateToEditNote()
+                    navController.navigate("AddEditTask/$tareaId")
+                }
+
             )
             onNavigateBack()
         }
@@ -149,16 +174,41 @@ fun NavigationHost(
             )
             onNavigateToEditNote()
         }
+        composable("AddEditTask/{taskId}") { backStackEntry ->
+            val taskId = backStackEntry.arguments?.getString("taskId")?.toIntOrNull()
+            val taskViewModel: TaskViewModel = hiltViewModel()
+            val state by taskViewModel.state.collectAsState()
+
+            taskScreen(
+                state = state,
+                tareaid = taskId,
+                onEvent = { event ->
+                    when (event) {
+                        is TareaEvent.NavigateBack -> {
+                            navController.popBackStack()
+                            onNavigateBack()
+                        }
+                        else -> taskViewModel.onEvent(event)
+                    }
+                }
+            )
+            onNavigateToEditNote()
+        }
     }
 }
 
 @Composable
 fun MainScreen(
     modifier: Modifier = Modifier,
-    onEditNote: (Int) -> Unit
+    onEditNote: (Int) -> Unit,
+    onEditTask: (Int) -> Unit
 ) {
     val noteViewModel: NoteViewModel = hiltViewModel()
+    val taskViewModel: TaskViewModel = hiltViewModel()
+
     val notes by noteViewModel.notes.collectAsState(initial = emptyList())
+    val tasks by taskViewModel.tasks.collectAsState(initial = emptyList())
+
     val (indice, frase) = Frases()
     val autor = Autores(indice)
 
@@ -167,20 +217,45 @@ fun MainScreen(
             .fillMaxSize()
             .padding(16.dp)
     ) {
+        // Mostrar la frase del día
         QuoteOfTheDay(
             text = frase,
             author = autor,
         )
         Spacer(modifier = Modifier.height(8.dp))
+
+        // Agregar un separador horizontal
         HorizontalDivider(thickness = 2.dp, color = Color(0xFF3F51B5))
         Spacer(modifier = Modifier.height(8.dp))
 
+        // Lista de Notas
+        Text(
+            text = "Notas",
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(8.dp)
+        )
         NoteList(
             notes = notes.map { (it.id ?: -1) to (it.title to it.content) },
             onEditNote = onEditNote
         )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Lista de Tareas
+        Text(
+            text = "Tareas",
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(8.dp)
+        )
+        TaskList(
+            tasks = tasks.map { (it.id ?: -1) to (it.title to it.content) },
+            onEditTask = onEditTask
+        )
     }
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -232,7 +307,7 @@ fun NoteList(notes: List<Pair<Int, Pair<String, String>>>, onEditNote: (Int) -> 
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         contentPadding = PaddingValues(8.dp),
-        modifier = Modifier.fillMaxHeight()
+        modifier = Modifier.fillMaxWidth()
     ) {
         items(notes.size) { index ->
             val (id, note) = notes[index]
@@ -279,7 +354,58 @@ fun NoteCard(title: String, content: String, onClick: () -> Unit) {
         }
     }
 }
+@Composable
+fun TaskList(tasks: List<Pair<Int, Pair<String, String>>>, onEditTask: (Int) -> Unit) {
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
+        contentPadding = PaddingValues(8.dp),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        items(tasks.size) { index ->
+            val (id, task) = tasks[index]
+            TaskCard(
+                title = task.first,
+                content = task.second,
+                onClick = { onEditTask(id) }
+            )
+        }
+    }
+}
 
+@Composable
+fun TaskCard(title: String, content: String, onClick: () -> Unit) {
+    Card(
+        shape = MaterialTheme.shapes.medium,
+        modifier = Modifier
+            .padding(8.dp)
+            .fillMaxWidth()
+            .height(100.dp)
+            .clickable { onClick() },
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFFDFFFD6) // Color diferente para distinguir las tareas
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(8.dp)
+                .fillMaxSize()
+        ) {
+            Text(
+                text = title,
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp,
+                color = Color.Black
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = content,
+                fontSize = 14.sp,
+                maxLines = 3,
+                color = Color.Black
+            )
+        }
+    }
+}
 fun Frases(): Pair<Int, String> {
     // Crear el HashMap
     val myMap: HashMap<Int, String> = HashMap()
