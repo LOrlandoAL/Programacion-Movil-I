@@ -34,6 +34,7 @@ import androidx.media3.ui.PlayerView
 import com.example.cna.componentes.DatePickerFecha
 import com.example.cna.componentes.VideoCaptureButton
 import android.content.Context
+import androidx.compose.ui.Alignment
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -120,6 +121,28 @@ fun taskScreen(
                     }
                 )
             }
+
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Campo de contenido
+                BasicTextField(
+                    value = state.content,
+                    onValueChange = { onEvent(TareaEvent.ContentChange(it)) },
+                    textStyle = TextStyle(fontSize = 16.sp, color = Color.Black),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color.LightGray)
+                        .padding(16.dp),
+                    decorationBox = { innerTextField ->
+                        if (state.content.isEmpty()) {
+                            Text(text = "Escribe tu nota aquí...", color = Color.Gray)
+                        }
+                        innerTextField()
+                    }
+                )
+            }
+
             item {
                 Spacer(modifier = Modifier.height(8.dp))
 
@@ -132,6 +155,8 @@ fun taskScreen(
             }
 
             item {
+                Spacer(modifier = Modifier.height(16.dp))
+
                 CameraButton(onImagesCaptured = { uri ->
                     uri?.let {
                         if (!state.imageUris.contains(it.toString())) {
@@ -163,10 +188,7 @@ fun taskScreen(
                         taskTitle = state.title
                     )
                 }
-
-
             }
-
 
             // Mostrar imágenes capturadas usando AsyncImage
             items(state.imageUris.size) { index ->
@@ -190,7 +212,7 @@ fun taskScreen(
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
             }
-            // Mostrar imágenes capturadas usando AsyncImage
+            // Mostrar videos capturados usando ExoPlayer
             items(state.videosUris.size) { index ->
                 Spacer(modifier = Modifier.height(16.dp))
                 val videoUri = state.videosUris[index]
@@ -238,27 +260,6 @@ fun taskScreen(
                         Text(text = "Reproducir")
                     }
                 }
-            }
-
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Campo de contenido
-                BasicTextField(
-                    value = state.content,
-                    onValueChange = { onEvent(TareaEvent.ContentChange(it)) },
-                    textStyle = TextStyle(fontSize = 16.sp, color = Color.Black),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color.LightGray)
-                        .padding(16.dp),
-                    decorationBox = { innerTextField ->
-                        if (state.content.isEmpty()) {
-                            Text(text = "Escribe tu nota aquí...", color = Color.Gray)
-                        }
-                        innerTextField()
-                    }
-                )
             }
 
             item {

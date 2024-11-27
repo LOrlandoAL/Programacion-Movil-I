@@ -21,6 +21,8 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.NoteAdd
+import androidx.compose.material.icons.filled.TaskAlt
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -69,13 +71,21 @@ class MainActivity : ComponentActivity() {
         setContent {
             CNATheme {
                 val navController = rememberNavController()
-                var showSaveButton by remember { mutableStateOf(false) } // Controlar cuándo mostrar el botón de guardar
+                val showFloatingButtons = remember { mutableStateOf(true) } // Estado mutable para los botones
+
+                // Listener para ocultar o mostrar botones basado en la ruta
+                navController.addOnDestinationChangedListener { _, destination, _ ->
+                    showFloatingButtons.value = when (destination.route) {
+                        "mainScreen" -> true // Mostrar botones solo en la pantalla principal
+                        else -> false // Ocultar en otras pantallas
+                    }
+                }
 
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     topBar = {
                         AppBar(
-                            showSaveButton = showSaveButton,
+                            showSaveButton = showFloatingButtons.value.not(), // Mostrar botón de guardar cuando los botones desaparecen
                             onSaveClick = {
                                 Toast.makeText(this, "Guardado", Toast.LENGTH_SHORT).show()
                                 navController.popBackStack()
@@ -83,8 +93,14 @@ class MainActivity : ComponentActivity() {
                         )
                     },
                     floatingActionButton = {
-                        Box(modifier = Modifier.fillMaxSize()) {
-                            if (!showSaveButton) {
+                        if (showFloatingButtons.value) { // Renderizar botones solo si el estado es true
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(end = 16.dp, bottom = 16.dp),
+                                horizontalAlignment = Alignment.End,
+                                verticalArrangement = Arrangement.Bottom
+                            ) {
                                 FloatingActionButton(
                                     onClick = {
                                         try {
@@ -92,28 +108,28 @@ class MainActivity : ComponentActivity() {
                                         } catch (e: Exception) {
                                             Log.e("MainActivity", "Navigation error: ${e.message}")
                                         }
-                                    },
-                                    modifier = Modifier
-                                        .align(Alignment.BottomEnd)
-                                        .padding(16.dp) // Espaciado desde los bordes
-                                ) {
-                                    Icon(imageVector = Icons.Default.Add, contentDescription = "Agregar nota")
-                                }
-                            }
-
-                            FloatingActionButton(
-                                onClick = {
-                                    try {
-                                        navController.navigate("AddEditTask/-1")
-                                    } catch (e: Exception) {
-                                        Log.e("MainActivity", "Navigation error: ${e.message}")
                                     }
-                                },
-                                modifier = Modifier
-                                    .align(Alignment.BottomStart)
-                                    .padding(16.dp) // Espaciado desde los bordes
-                            ) {
-                                Icon(imageVector = Icons.Default.Add, contentDescription = "Agregar tarea")
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.NoteAdd,
+                                        contentDescription = "Agregar nota"
+                                    )
+                                }
+                                Spacer(modifier = Modifier.height(16.dp))
+                                FloatingActionButton(
+                                    onClick = {
+                                        try {
+                                            navController.navigate("AddEditTask/-1")
+                                        } catch (e: Exception) {
+                                            Log.e("MainActivity", "Navigation error: ${e.message}")
+                                        }
+                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.TaskAlt,
+                                        contentDescription = "Agregar tarea"
+                                    )
+                                }
                             }
                         }
                     }
@@ -121,8 +137,8 @@ class MainActivity : ComponentActivity() {
                     NavigationHost(
                         navController = navController,
                         modifier = Modifier.padding(innerPadding),
-                        onNavigateToEditNote = { showSaveButton = true },
-                        onNavigateBack = { showSaveButton = false }
+                        onNavigateToEditNote = {},
+                        onNavigateBack = {}
                     )
                 }
             }
@@ -142,17 +158,12 @@ fun NavigationHost(
             MainScreen(
                 modifier = modifier,
                 onEditNote = { noteId ->
-                    onNavigateToEditNote()
                     navController.navigate("AddEditNote/$noteId")
-                }
-                ,
+                },
                 onEditTask = { tareaId ->
-                    onNavigateToEditNote()
                     navController.navigate("AddEditTask/$tareaId")
                 }
-
             )
-            onNavigateBack()
         }
         composable("AddEditNote/{noteId}") { backStackEntry ->
             val noteId = backStackEntry.arguments?.getString("noteId")?.toIntOrNull()
@@ -166,13 +177,11 @@ fun NavigationHost(
                     when (event) {
                         is NoteEvent.NavigateBack -> {
                             navController.popBackStack()
-                            onNavigateBack()
                         }
                         else -> viewModel.onEvent(event)
                     }
                 }
             )
-            onNavigateToEditNote()
         }
         composable("AddEditTask/{taskId}") { backStackEntry ->
             val taskId = backStackEntry.arguments?.getString("taskId")?.toIntOrNull()
@@ -186,16 +195,15 @@ fun NavigationHost(
                     when (event) {
                         is TareaEvent.NavigateBack -> {
                             navController.popBackStack()
-                            onNavigateBack()
                         }
                         else -> taskViewModel.onEvent(event)
                     }
                 }
             )
-            onNavigateToEditNote()
         }
     }
 }
+
 
 @Composable
 fun MainScreen(
