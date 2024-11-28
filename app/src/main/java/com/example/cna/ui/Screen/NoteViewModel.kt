@@ -76,6 +76,22 @@ class NoteViewModel @Inject constructor(
                     current.copy(videosUris = uniqueUris)
                 }
             }
+            is NoteEvent.RemoveImage -> {
+                _state.value = _state.value.copy(
+                    imageUris = _state.value.imageUris.filter { it != event.uri }
+                )
+            }
+            is NoteEvent.RemoveAudio -> {
+                _state.value = _state.value.copy(
+                    AudioUris = _state.value.AudioUris.filter { it != event.uri }
+                )
+            }
+            is NoteEvent.RemoveVideo -> {
+                _state.value = _state.value.copy(
+                    videosUris = _state.value.videosUris.filter { it != event.uri }
+                )
+            }
+
 
             NoteEvent.NavigateBack -> {
                 sendEvent(UiEvent.NavigateBack)

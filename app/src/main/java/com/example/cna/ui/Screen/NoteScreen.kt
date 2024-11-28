@@ -5,19 +5,17 @@ import android.net.Uri
 import android.util.Log
 import android.view.View
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,12 +26,12 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.cna.R
 import com.example.cna.componentes.AudioRecorderButton
 import com.example.cna.componentes.CameraButton
-import com.example.cna.componentes.DatePickerFecha
 import com.example.cna.componentes.VideoCaptureButton
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -51,6 +49,9 @@ fun NoteScreen(
     val context = LocalContext.current
     var mediaPlayer: MediaPlayer? = remember { null }
 
+    val (previewUri, setPreviewUri) = remember { mutableStateOf<String?>(null) }
+    val (isVideo, setIsVideo) = remember { mutableStateOf(false) }
+
     fun playAudio(uri: String) {
         try {
             mediaPlayer?.release()
@@ -62,6 +63,14 @@ fun NoteScreen(
         } catch (e: Exception) {
             Log.e("AudioPlayback", "Error al reproducir el audio", e)
         }
+    }
+
+    if (previewUri != null) {
+        FullScreenPreview(
+            uri = previewUri,
+            isVideo = isVideo,
+            onDismiss = { setPreviewUri(null) }
+        )
     }
 
     Scaffold(
@@ -192,77 +201,8 @@ fun NoteScreen(
                     })
                 }
             }
-            // Selección de fecha
-            item {
-                DatePickerFecha { selectedCalendar ->
-                    checkNotificationPermission(context) {
-                        scheduleNotification(
-                            context = context.applicationContext,
-                            calendar = selectedCalendar,
-                            taskTitle = state.title
-                        )
-                    }
-                }
-            }
-
-            // Mostrar Imágenes Guardadas
-            if (state.imageUris.isNotEmpty()) {
-                item {
-                    Text(
-                        text = stringResource(id = R.string.saved_images),
-                        style = TextStyle(fontSize = 18.sp, color = Color.Black),
-                        modifier = Modifier.padding(vertical = 8.dp)
-                    )
-                }
-                items(state.imageUris) { uri ->
-                    AsyncImage(
-                        model = uri,
-                        contentDescription = stringResource(id = R.string.saved_images),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp),
-                        contentScale = ContentScale.Crop
-                    )
-                }
-            }
-
-            // Mostrar Videos Guardados
-            if (state.videosUris.isNotEmpty()) {
-                item {
-                    Text(
-                        text = stringResource(id = R.string.saved_videos),
-                        style = TextStyle(fontSize = 18.sp, color = Color.Black),
-                        modifier = Modifier.padding(vertical = 8.dp)
-                    )
-                }
-                items(state.videosUris) { uri ->
-                    AndroidView(
-                        factory = { ctx ->
-                            androidx.media3.ui.PlayerView(ctx).apply {
-                                val exoPlayer = androidx.media3.exoplayer.ExoPlayer.Builder(ctx).build().apply {
-                                    setMediaItem(androidx.media3.common.MediaItem.fromUri(uri))
-                                    prepare()
-                                    playWhenReady = false
-                                }
-                                player = exoPlayer
-                                addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
-                                    override fun onViewAttachedToWindow(view: View) {}
-                                    override fun onViewDetachedFromWindow(view: View) {
-                                        exoPlayer.release()
-                                    }
-                                })
-                            }
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp)
-                            .padding(vertical = 8.dp)
-                    )
-                }
-            }
-
-            // Mostrar Audios Guardados
-            if (state.AudioUris.isNotEmpty()) {
+            val validAudios = state.AudioUris.filter { it.isNotEmpty() }
+            if (validAudios.isNotEmpty()) {
                 item {
                     Text(
                         text = stringResource(id = R.string.audio),
@@ -270,7 +210,7 @@ fun NoteScreen(
                         modifier = Modifier.padding(vertical = 8.dp)
                     )
                 }
-                items(state.AudioUris) { uri ->
+                items(validAudios) { uri ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -279,15 +219,182 @@ fun NoteScreen(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = stringResource(id = R.string.audio),
+                            text = uri.split("/").last(), // Muestra solo el nombre del archivo
                             style = TextStyle(fontSize = 16.sp, color = Color.Black),
                             modifier = Modifier.padding(8.dp)
                         )
-                        Button(onClick = { playAudio(uri) }) {
-                            Text(text = stringResource(id = R.string.play))
+                        Row {
+                            Button(
+                                onClick = { playAudio(uri) },
+                                modifier = Modifier.padding(end = 8.dp)
+                            ) {
+                                Text(text = stringResource(id = R.string.play))
+                            }
+                            IconButton(
+                                onClick = { onEvent(NoteEvent.RemoveAudio(uri)) },
+                                modifier = Modifier.size(24.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Delete,
+                                    contentDescription = stringResource(id = R.string.delete_audio),
+                                    tint = Color.Red
+                                )
+                            }
                         }
                     }
                 }
+            }
+
+            val validImages = state.imageUris.filter { it.isNotEmpty() }
+            if (validImages.isNotEmpty()) {
+                item {
+                    Text(
+                        text = stringResource(id = R.string.saved_images),
+                        style = TextStyle(fontSize = 18.sp, color = Color.Black),
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
+                }
+                items(validImages) { uri ->
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                    ) {
+                        AsyncImage(
+                            model = uri,
+                            contentDescription = stringResource(id = R.string.saved_images),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(200.dp)
+                                .clickable {
+                                    setPreviewUri(uri)
+                                    setIsVideo(false)
+                                },
+                            contentScale = ContentScale.Crop
+                        )
+                        IconButton(
+                            onClick = { onEvent(NoteEvent.RemoveImage(uri)) },
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(8.dp)
+                                .size(24.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = stringResource(id = R.string.delete_image),
+                                tint = Color.Red
+                            )
+                        }
+                    }
+                }
+            }
+
+            val validVideos = state.videosUris.filter { it.isNotEmpty() }
+            if (validVideos.isNotEmpty()) {
+                item {
+                    Text(
+                        text = stringResource(id = R.string.saved_videos),
+                        style = TextStyle(fontSize = 18.sp, color = Color.Black),
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
+                }
+                items(validVideos) { uri ->
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp)
+                            .padding(8.dp)
+                    ) {
+                        AndroidView(
+                            factory = { ctx ->
+                                androidx.media3.ui.PlayerView(ctx).apply {
+                                    val exoPlayer = androidx.media3.exoplayer.ExoPlayer.Builder(ctx).build().apply {
+                                        setMediaItem(androidx.media3.common.MediaItem.fromUri(uri))
+                                        prepare()
+                                        playWhenReady = false
+                                    }
+                                    player = exoPlayer
+                                    addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
+                                        override fun onViewAttachedToWindow(view: View) {}
+                                        override fun onViewDetachedFromWindow(view: View) {
+                                            exoPlayer.release()
+                                        }
+                                    })
+                                }
+                            },
+                            modifier = Modifier.fillMaxSize()
+                        )
+                        IconButton(
+                            onClick = { onEvent(NoteEvent.RemoveVideo(uri)) },
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(8.dp)
+                                .size(24.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = stringResource(id = R.string.delete_video),
+                                tint = Color.Red
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun FullScreenPreview(
+    uri: String,
+    isVideo: Boolean,
+    onDismiss: () -> Unit
+) {
+    Dialog(onDismissRequest = onDismiss) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black)
+        ) {
+            if (isVideo) {
+                AndroidView(
+                    factory = { ctx ->
+                        androidx.media3.ui.PlayerView(ctx).apply {
+                            val exoPlayer = androidx.media3.exoplayer.ExoPlayer.Builder(ctx).build().apply {
+                                setMediaItem(androidx.media3.common.MediaItem.fromUri(uri))
+                                prepare()
+                                playWhenReady = true
+                            }
+                            player = exoPlayer
+                            addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
+                                override fun onViewAttachedToWindow(view: View) {}
+                                override fun onViewDetachedFromWindow(view: View) {
+                                    exoPlayer.release()
+                                }
+                            })
+                        }
+                    },
+                    modifier = Modifier.fillMaxSize()
+                )
+            } else {
+                AsyncImage(
+                    model = uri,
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Fit
+                )
+            }
+            IconButton(
+                onClick = onDismiss,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(16.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = stringResource(id = R.string.close),
+                    tint = Color.White
+                )
             }
         }
     }

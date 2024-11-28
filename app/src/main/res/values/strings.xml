@@ -20,6 +20,10 @@
     <string name="delete_task">Delete Task</string>
     <string name="new_task_title">New Task Title</string>
     <string name="write_your_task">Write your task here...</string>
+    <string name="close">X</string>
+    <string name="delete_audio">Borrar audio</string>
+    <string name="delete_image">Borrar imagenes</string>
+    <string name="delete_video">Borrar videos</string>
 
 
     <!-- Frases del Día -->

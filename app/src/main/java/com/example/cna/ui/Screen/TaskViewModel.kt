@@ -84,6 +84,21 @@ class TaskViewModel @Inject constructor(
             is TareaEvent.CompleteStatusChange -> {
                 _state.value = _state.value.copy(isCompleted = event.isComplete)
             }
+            is TareaEvent.RemoveImage -> {
+                _state.value = _state.value.copy(
+                    imageUris = _state.value.imageUris.filter { it != event.uri }
+                )
+            }
+            is TareaEvent.RemoveAudio -> {
+                _state.value = _state.value.copy(
+                    AudioUris = _state.value.AudioUris.filter { it != event.uri }
+                )
+            }
+            is TareaEvent.RemoveVideo -> {
+                _state.value = _state.value.copy(
+                    videosUris = _state.value.videosUris.filter { it != event.uri }
+                )
+            }
 
             TareaEvent.NavigateBack -> {
                 sendEvent(UiEvent.NavigateBack)

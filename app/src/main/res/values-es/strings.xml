@@ -20,7 +20,10 @@
     <string name="delete_task">Borrar Tarea</string>
     <string name="new_task_title">Título nueva tarea</string>
     <string name="write_your_task">Escribe tu tarea aquí...</string>
-
+    <string name="close">X</string>
+    <string name="delete_audio">Delete audio</string>
+    <string name="delete_image">Delete image</string>
+    <string name="delete_video">Delete video</string>
     <!-- Frases del Día -->
     <string-array name="quotes">
         <item>El hombre que domina al hombre es admirable, pero el hombre que se domina a sí mismo es invencible.</item>
