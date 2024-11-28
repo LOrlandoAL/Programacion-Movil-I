@@ -1,4 +1,5 @@
 package com.example.cna
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -44,6 +45,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -65,6 +68,7 @@ import com.example.cna.ui.Screen.NoteViewModel as NoteViewModel
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -82,14 +86,13 @@ class MainActivity : ComponentActivity() {
                 }
 
                 Scaffold(
-                    modifier = Modifier.fillMaxSize(),
                     topBar = {
-                        AppBar(
-                            showSaveButton = showFloatingButtons.value.not(), // Mostrar botón de guardar cuando los botones desaparecen
-                            onSaveClick = {
-                                Toast.makeText(this, "Guardado", Toast.LENGTH_SHORT).show()
-                                navController.popBackStack()
-                            }
+                        TopAppBar(
+                            title = { Text("C.N.A") },
+                            colors = TopAppBarDefaults.mediumTopAppBarColors(
+                                containerColor = Color(0xFF3F51B5),
+                                titleContentColor = Color.White
+                            )
                         )
                     },
                     floatingActionButton = {
@@ -204,21 +207,21 @@ fun NavigationHost(
     }
 }
 
-
 @Composable
 fun MainScreen(
     modifier: Modifier = Modifier,
     onEditNote: (Int) -> Unit,
     onEditTask: (Int) -> Unit
 ) {
+    val context = LocalContext.current
     val noteViewModel: NoteViewModel = hiltViewModel()
     val taskViewModel: TaskViewModel = hiltViewModel()
 
     val notes by noteViewModel.notes.collectAsState(initial = emptyList())
     val tasks by taskViewModel.tasks.collectAsState(initial = emptyList())
 
-    val (indice, frase) = Frases()
-    val autor = Autores(indice)
+    val (indice, frase) = Frases(context)
+    val autor = Autores(context, indice)
 
     Column(
         modifier = modifier
@@ -238,7 +241,7 @@ fun MainScreen(
 
         // Lista de Notas
         Text(
-            text = "Notas",
+            text = stringResource(id = R.string.notes),
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(8.dp)
@@ -252,7 +255,7 @@ fun MainScreen(
 
         // Lista de Tareas
         Text(
-            text = "Tareas",
+            text = stringResource(id = R.string.tasks),
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(8.dp)
@@ -414,35 +417,14 @@ fun TaskCard(title: String, content: String, onClick: () -> Unit) {
         }
     }
 }
-fun Frases(): Pair<Int, String> {
-    // Crear el HashMap
-    val myMap: HashMap<Int, String> = HashMap()
-
-    // Agregar elementos
-    myMap[1] = "El hombre que domina al hombre es admirable, el hombre que se domina a si mismo es invencible "
-    myMap[2] = "Todos somos genios, pero si gusgas a un pez por su habilidad de escalar un árbol, vivirá su vida entera creyendo que es estúpido"
-    myMap[3] = "Conócete a ti mismo, conoce el terreno, el clima, al enemigo y podrás librar cien batallas sin correr ningún riesgo de derrota"
-    myMap[4] = "Todos nuestros sueños se pueden convertir en realidad  si tenemos el coraje de seguirlos"
-
-
-    // Obtener una lista de valores del HashMap
-    val valores = myMap.values.toList() // Convertir a lista
-
-    // Seleccionar un valor aleatorio
-    val indiceAleatorio = Random.nextInt(1, valores.size + 1) // Evita índice 0
-    val valorAleatorio = valores[indiceAleatorio - 1]
-    // Devolver el valor aleatorio
-    return Pair(indiceAleatorio, valorAleatorio)
+fun Frases(context: Context): Pair<Int, String> {
+    val quotes = context.resources.getStringArray(R.array.quotes)
+    val randomIndex = Random.nextInt(quotes.size)
+    return Pair(randomIndex, quotes[randomIndex])
 }
-fun Autores(indice:Int ): String {
-    // Crear el HashMap
-    val myMap: HashMap<Int, String> = HashMap()
-    // Agregar elementos
-    myMap[1] = "Friedrich Nietzsche"
-    myMap[2] = "Albert Einstein"
-    myMap[3] = "Sun Tzu"
-    myMap[4] = "Walt Disney"
 
-    return myMap[indice] ?: "Autor no encontrado"
+fun Autores(context: Context, index: Int): String {
+    val authors = context.resources.getStringArray(R.array.authors)
+    return authors.getOrNull(index) ?: "Unknown Author"
 }
 

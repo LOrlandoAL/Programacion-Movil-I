@@ -14,7 +14,7 @@ import androidx.compose.ui.platform.LocalContext
 import java.util.Calendar
 
 @Composable
-fun DatePickerFecha(onDateTimeSelected:  (Calendar) -> Unit) {
+fun DatePickerFecha(onDateTimeSelected: (Calendar) -> Unit) {
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
 
@@ -35,7 +35,7 @@ fun DatePickerFecha(onDateTimeSelected:  (Calendar) -> Unit) {
                 }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show()
             }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show()
         }) {
-            Text("Seleccionar Fecha y Hora")
+            Text("Programar Notificacion")
         }
 
         Text(text = "Fecha seleccionada: $date")

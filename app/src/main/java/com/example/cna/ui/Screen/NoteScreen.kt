@@ -23,14 +23,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import com.example.cna.R
 import com.example.cna.componentes.AudioRecorderButton
 import com.example.cna.componentes.CameraButton
+import com.example.cna.componentes.DatePickerFecha
 import com.example.cna.componentes.VideoCaptureButton
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -45,20 +48,16 @@ fun NoteScreen(
         noteId?.let { viewModel.loadNoteById(it) }
     }
 
-    // MediaPlayer para reproducción de audio
-    var mediaPlayer: MediaPlayer? = remember { null }
     val context = LocalContext.current
+    var mediaPlayer: MediaPlayer? = remember { null }
 
     fun playAudio(uri: String) {
         try {
-            // Libera el MediaPlayer actual si está en uso
             mediaPlayer?.release()
             mediaPlayer = MediaPlayer().apply {
                 setDataSource(context, Uri.parse(uri))
-                setOnPreparedListener {
-                    it.start() // Comienza la reproducción cuando el audio está listo
-                }
-                prepareAsync() // Carga el archivo de audio de forma asincrónica
+                setOnPreparedListener { it.start() }
+                prepareAsync()
             }
         } catch (e: Exception) {
             Log.e("AudioPlayback", "Error al reproducir el audio", e)
@@ -68,15 +67,7 @@ fun NoteScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Editar Nota") },
-                navigationIcon = {
-                    IconButton(onClick = { onEvent(NoteEvent.NavigateBack) }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = "Regresar"
-                        )
-                    }
-                },
+                title = { Text(stringResource(id = R.string.edit_note)) },
                 colors = TopAppBarDefaults.mediumTopAppBarColors(
                     containerColor = Color(0xFF3F51B5),
                     titleContentColor = Color.White
@@ -98,7 +89,7 @@ fun NoteScreen(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Save,
-                        contentDescription = "Guardar Nota"
+                        contentDescription = stringResource(id = R.string.save_note)
                     )
                 }
 
@@ -111,12 +102,12 @@ fun NoteScreen(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Delete,
-                        contentDescription = "Borrar Nota"
+                        contentDescription = stringResource(id = R.string.delete_note)
                     )
                 }
             }
         }
-    )  { paddingValues ->
+    ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
                 .padding(paddingValues)
@@ -127,7 +118,7 @@ fun NoteScreen(
             // Campo de Título
             item {
                 Text(
-                    text = "Título",
+                    text = stringResource(id = R.string.title),
                     style = TextStyle(fontSize = 18.sp, color = Color.Black),
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
@@ -141,7 +132,7 @@ fun NoteScreen(
                         .padding(16.dp),
                     decorationBox = { innerTextField ->
                         if (state.title.isEmpty()) {
-                            Text(text = "Escribe el título...", color = Color.Gray)
+                            Text(text = stringResource(id = R.string.enter_title), color = Color.Gray)
                         }
                         innerTextField()
                     }
@@ -151,7 +142,7 @@ fun NoteScreen(
             // Campo de Contenido
             item {
                 Text(
-                    text = "Contenido",
+                    text = stringResource(id = R.string.content),
                     style = TextStyle(fontSize = 18.sp, color = Color.Black),
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
@@ -166,13 +157,12 @@ fun NoteScreen(
                         .padding(16.dp),
                     decorationBox = { innerTextField ->
                         if (state.content.isEmpty()) {
-                            Text(text = "Escribe tu nota aquí...", color = Color.Gray)
+                            Text(text = stringResource(id = R.string.enter_content), color = Color.Gray)
                         }
                         innerTextField()
                     }
                 )
             }
-
             // Botones para multimedia
             item {
                 Row(
@@ -202,12 +192,24 @@ fun NoteScreen(
                     })
                 }
             }
+            // Selección de fecha
+            item {
+                DatePickerFecha { selectedCalendar ->
+                    checkNotificationPermission(context) {
+                        scheduleNotification(
+                            context = context.applicationContext,
+                            calendar = selectedCalendar,
+                            taskTitle = state.title
+                        )
+                    }
+                }
+            }
 
-            // Mostrar Imágenes
+            // Mostrar Imágenes Guardadas
             if (state.imageUris.isNotEmpty()) {
                 item {
                     Text(
-                        text = "Imágenes Guardadas",
+                        text = stringResource(id = R.string.saved_images),
                         style = TextStyle(fontSize = 18.sp, color = Color.Black),
                         modifier = Modifier.padding(vertical = 8.dp)
                     )
@@ -215,7 +217,7 @@ fun NoteScreen(
                 items(state.imageUris) { uri ->
                     AsyncImage(
                         model = uri,
-                        contentDescription = "Imagen guardada",
+                        contentDescription = stringResource(id = R.string.saved_images),
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(200.dp),
@@ -224,11 +226,11 @@ fun NoteScreen(
                 }
             }
 
-            // Mostrar Videos
+            // Mostrar Videos Guardados
             if (state.videosUris.isNotEmpty()) {
                 item {
                     Text(
-                        text = "Videos Guardados",
+                        text = stringResource(id = R.string.saved_videos),
                         style = TextStyle(fontSize = 18.sp, color = Color.Black),
                         modifier = Modifier.padding(vertical = 8.dp)
                     )
@@ -259,11 +261,11 @@ fun NoteScreen(
                 }
             }
 
-            // Mostrar Audios
+            // Mostrar Audios Guardados
             if (state.AudioUris.isNotEmpty()) {
                 item {
                     Text(
-                        text = "Audios Guardados",
+                        text = stringResource(id = R.string.audio),
                         style = TextStyle(fontSize = 18.sp, color = Color.Black),
                         modifier = Modifier.padding(vertical = 8.dp)
                     )
@@ -277,12 +279,12 @@ fun NoteScreen(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = "Audio",
+                            text = stringResource(id = R.string.audio),
                             style = TextStyle(fontSize = 16.sp, color = Color.Black),
                             modifier = Modifier.padding(8.dp)
                         )
                         Button(onClick = { playAudio(uri) }) {
-                            Text(text = "Reproducir")
+                            Text(text = stringResource(id = R.string.play))
                         }
                     }
                 }

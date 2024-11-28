@@ -13,7 +13,7 @@ import com.example.cna.domain.Converters
 @TypeConverters(Converters::class)
 abstract class NoteDatabase : RoomDatabase() {
     abstract val noteDao: NoteDao
-    abstract val taskDao: TareaDao // Nueva DAO para tareas
+    abstract val taskDao: TareaDao
     companion object {
         const val name = "note_db"
     }

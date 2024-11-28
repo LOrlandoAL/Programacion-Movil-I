@@ -1,0 +1,39 @@
+<resources>
+    <string name="app_name">C.N.A</string>
+    <string name="quote_of_the_day">Frase del Día</string>
+    <string name="notes">Notas</string>
+    <string name="tasks">Tareas</string>
+    <string name="add_note">Agregar Nota</string>
+    <string name="add_task">Agregar Tarea</string>
+    <string name="edit_note">Editar Nota</string>
+    <string name="save_note">Guardar Nota</string>
+    <string name="delete_note">Borrar Nota</string>
+    <string name="title">Título</string>
+    <string name="enter_title">Escribe el título...</string>
+    <string name="content">Contenido</string>
+    <string name="enter_content">Escribe tu nota aquí...</string>
+    <string name="saved_images">Imágenes Guardadas</string>
+    <string name="saved_videos">Videos Guardados</string>
+    <string name="audio">Audio</string>
+    <string name="play">Reproducir</string>
+    <string name="save_task">Guardar Tarea</string>
+    <string name="delete_task">Borrar Tarea</string>
+    <string name="new_task_title">Título nueva tarea</string>
+    <string name="write_your_task">Escribe tu tarea aquí...</string>
+
+    <!-- Frases del Día -->
+    <string-array name="quotes">
+        <item>El hombre que domina al hombre es admirable, pero el hombre que se domina a sí mismo es invencible.</item>
+        <item>Todos somos genios, pero si juzgas a un pez por su habilidad para trepar un árbol, vivirá toda su vida creyendo que es estúpido.</item>
+        <item>Conócete a ti mismo, conoce el terreno, el clima y al enemigo, y podrás librar cien batallas sin riesgo de derrota.</item>
+        <item>Todos nuestros sueños pueden hacerse realidad si tenemos el coraje de perseguirlos.</item>
+    </string-array>
+
+    <!-- Autores -->
+    <string-array name="authors">
+        <item>Friedrich Nietzsche</item>
+        <item>Albert Einstein</item>
+        <item>Sun Tzu</item>
+        <item>Walt Disney</item>
+    </string-array>
+</resources>

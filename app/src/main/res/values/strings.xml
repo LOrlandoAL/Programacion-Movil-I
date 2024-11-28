@@ -1,3 +1,40 @@
 <resources>
-    <string name="app_name">CNA</string>
+    <string name="app_name">C.N.A</string>
+    <string name="quote_of_the_day">Quote of the Day</string>
+    <string name="notes">Notes</string>
+    <string name="tasks">Tasks</string>
+    <string name="add_note">Add Note</string>
+    <string name="add_task">Add Task</string>
+    <string name="edit_note">Edit Note</string>
+    <string name="save_note">Save Note</string>
+    <string name="delete_note">Delete Note</string>
+    <string name="title">Title</string>
+    <string name="enter_title">Enter the title...</string>
+    <string name="content">Content</string>
+    <string name="enter_content">Write your note here...</string>
+    <string name="saved_images">Saved Images</string>
+    <string name="saved_videos">Saved Videos</string>
+    <string name="audio">Audio</string>
+    <string name="play">Play</string>
+    <string name="save_task">Save Task</string>
+    <string name="delete_task">Delete Task</string>
+    <string name="new_task_title">New Task Title</string>
+    <string name="write_your_task">Write your task here...</string>
+
+
+    <!-- Frases del Día -->
+    <string-array name="quotes">
+        <item>The man who masters others is admirable, but the man who masters himself is invincible.</item>
+        <item>Everybody is a genius. But if you judge a fish by its ability to climb a tree, it will live its whole life believing it is stupid.</item>
+        <item>Know yourself, know the terrain, the weather, and the enemy, and you will fight a hundred battles without the risk of defeat.</item>
+        <item>All our dreams can come true if we have the courage to pursue them.</item>
+    </string-array>
+
+    <!-- Autores -->
+    <string-array name="authors">
+        <item>Friedrich Nietzsche</item>
+        <item>Albert Einstein</item>
+        <item>Sun Tzu</item>
+        <item>Walt Disney</item>
+    </string-array>
 </resources>
